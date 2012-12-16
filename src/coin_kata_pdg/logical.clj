@@ -1,4 +1,4 @@
-(ns coin-kata.logical
+(ns coin-kata-pdg.logical
   (:require [clojure.core.logic :as l]
             [clojure.core.logic.arithmetic :as a]))
 

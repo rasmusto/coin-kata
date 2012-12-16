@@ -1,4 +1,4 @@
-(ns coin-kata.coin-shift
+(ns coin-kata-pdg.coin-shift
   (:require [clojure.core.reducers :as r]))
 
 (defn make-change

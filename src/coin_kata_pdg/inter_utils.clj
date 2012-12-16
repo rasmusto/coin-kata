@@ -1,4 +1,4 @@
-(ns coin-kata.inter-utils
+(ns coin-kata-pdg.inter-utils
   (:require [clojure.tools.namespace.repl :as trepl]))
 
 ;; utils for interactive development

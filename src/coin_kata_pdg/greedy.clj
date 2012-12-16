@@ -1,4 +1,4 @@
-(ns coin-kata.greedy)
+(ns coin-kata-pdg.greedy)
 
 (defn greedy-recur
   ""
