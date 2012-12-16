@@ -45,23 +45,29 @@ The best Clojure setup for Emacs is "Emacs-live" - but basic clojure-mode+swank+
  * https://github.com/overtone/emacs-live
  * https://github.com/technomancy/swank-clojure [deprecated for nREPL]
 
-### VimClojure and Foreplay tips
+Emacs Live provides great documentation for getting started.  It covers Clojure, Paredit, and live editing:
 
-Here are helpful Foreplay and VimClojure commands
+ * http://overtone.github.com/emacs-live/documentation.html
+
+### Vim tips
+
+In vim, I suggest you use pathogen.vim and install [Foreplay](https://github.com/tpope/vim-foreplay) and [VimClojure-static](https://github.com/guns/vim-clojure-static)
+
+Here are helpful Foreplay commands
 
  * K - lookup word
  * gd - goto definition (`ctrl-w g d` is most helpful)
  * gf - goto file (`ctrl-w g f` is most helpful)
  * [d - source lookup of word
  * cpp - eval paragraph
- * cpr - require file
+ * cpr - require file (if aliased)
  * cpw - eval word (see what it's bound/def'd to)
  * :Source, :Doc, :FindDoc, and :Apropros
- * \tr - toggle rainbow parens
+ * :make - is connected to `lein`, so `:make test` works
 
 ### Paredit.vim tips
 
-I also make use of the paredit.vim file from the slimv.vim plugin. This assumes your `<leader>` is `\`
+I also make use of [paredit.vim](https://github.com/vim-scripts/paredit.vim). This assumes your `<leader>` is `\`
 
  * :call PareditToggle() - toggle it on and off.
  * \W wrap in paren (works with visual selection too)
