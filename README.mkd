@@ -1,0 +1,95 @@
+Clojerks Swarm: Coin Kata
+=========================
+
+[Clojerks](http://www.meetup.com/clojerks/) is Portland's Clojure User Group.
+
+This is the result of the group swarm coding on the [Coin Kata](http://craftsmanship.sv.cmu.edu/exercises/coin-change-kata-1)
+
+```
+Write a program that will correctly determine the least number of coins to be given to the user such that
+the sum of the coins' value would equal the correct amount of change.
+
+Input: change amount 
+Input: coin denomination array (ie [1, 5, 10, 25, 100] ) => [we'll use a sorted-set]
+Output: number of coins array (ie [1, 0, 1, 0, 0] would represent $0.11 => [we'll use a hashmap {1 1, 5 0, 10 1, 25 0, 100 0}]
+
+For example
+An input of 15 with [1, 5, 10, 25, 100] should return fifteen cents or [0, 1, 1, 0, 0]
+An input of 40 with [1, 5, 10, 25, 100] should return two dimes or [0, 1, 1, 1, 0]
+```
+
+Ideas to expand on
+-------------------
+
+ * Type the solution with [typed-clojure](https://github.com/frenchy64/typed-clojure)
+ * Solve the problem with [core.logic](https://github.com/clojure/core.logic) and the new support for constraints
+ * Optimize the program with reducers
+ * Expose the solution as a RESTful web service
+ * Port the solution to ClojureScript, compile it, and deploy it
+ * Use test.generative to test the program
+
+
+A General Overview
+-------------------
+### Using the Clojure REPL
+
+More to come, but: `lein repl`
+
+Working with Clojure
+--------------------
+### Emacs tips
+
+The best Clojure setup for Emacs is "Emacs-live" - but basic clojure-mode+swank+nrepl support is also possible
+
+ * https://github.com/kingtim/nrepl.el
+ * https://github.com/overtone/emacs-live
+ * https://github.com/technomancy/swank-clojure [deprecated for nREPL]
+
+### VimClojure and Foreplay tips
+
+Here are helpful Foreplay and VimClojure commands
+
+ * K - lookup word
+ * gd - goto definition (`ctrl-w g d` is most helpful)
+ * gf - goto file (`ctrl-w g f` is most helpful)
+ * [d - source lookup of word
+ * cpp - eval paragraph
+ * cpr - require file
+ * cpw - eval word (see what it's bound/def'd to)
+ * :Source, :Doc, :FindDoc, and :Apropros
+ * \tr - toggle rainbow parens
+
+### Paredit.vim tips
+
+I also make use of the paredit.vim file from the slimv.vim plugin. This assumes your `<leader>` is `\`
+
+ * :call PareditToggle() - toggle it on and off.
+ * \W wrap in paren (works with visual selection too)
+ * \J join paren - (a)(b) -> (a b)
+ * \O split paren - (a b) -> (a)(b)
+ * \S splice paren - ((a b)) -> (a b)
+ * `\<` move left - moves parens around blocks (a)|(b) -> ((a) b)
+ * `\>` move right - moves parens around blocks (a|)(b) -> (a (b))
+ * `[[` and `]]` browses across top-level forms
+ * `(` and `)` browses across parens
+
+Wrapping can also be tailored, and used on a visual block:
+
+ * `\w"`
+ * `\w[`
+ * `\w(`
+
+
+Other useful tips
+-----------------
+### Other VIM tips
+
+ * Use [surround.vim](http://www.vim.org/scripts/script.php?script_id=1697)
+
+License
+-------
+Copyright © 2012 Paul deGrandis // Clojerks
+
+Distributed under the Eclipse Public License, the same as Clojure.
+Please see the `LICENSE_epl.html` for details.
+
