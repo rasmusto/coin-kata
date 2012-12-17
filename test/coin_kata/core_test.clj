@@ -1,6 +1,6 @@
 (ns coin-kata.core-test
   (:require [clojure.test :as ctest :refer [deftest with-test testing are]]
-            [coin-kata.greedy :as greedy]))
+            [coin-kata-pdg.greedy :as greedy]))
 
 (def ^:dynamic coin-f greedy/greedy-recur)
 
