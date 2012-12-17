@@ -3,6 +3,8 @@
 (defn greedy-recur
   ""
   ([denominations amount]
+   {:pre [(not (empty? denominations))
+          (not (neg? amount))]}
    (greedy-recur (apply sorted-set denominations) amount (zipmap denominations (repeat 0))))
   ([denominations amount res-map]
    (if (> amount 0)
