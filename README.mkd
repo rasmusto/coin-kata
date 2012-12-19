@@ -27,6 +27,7 @@ Ideas to expand on
  * Expose the solution as a RESTful web service
  * Port the solution to ClojureScript, compile it, and deploy it
  * Use test.generative to test the program
+ * Make it into a Leiningen plugin
 
 
 A General Overview
