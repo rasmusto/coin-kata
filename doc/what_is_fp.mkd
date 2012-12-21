@@ -1,0 +1,28 @@
+
+What is functional programming?
+================================
+
+  * Program with values (not variables)
+  * Functions are values
+  * Functions are first class (they can return functions, and take functions as arguments)
+  * Functions should be referentially transparent - given the same arguments, they produce the exact same _value_
+  * Lexical scoping (with _values_ only)
+  * Persistent immutable data structures - fast, functional DS's
+  * Compose abstractions to achieve functionality
+  * State and mutation are constrained, contained, and controlled (or avoided all together)
+
+
+Additionally, Clojure is:
+==========================
+
+ * a compiled, dynamic language.  Compilation is dynamic
+ * homoiconic - code is data; data is code.
+ * polymorphism ala carte
+     (participation in "abstractions" is done by extending Protocols)
+ * Controls mutation through reference types; immutability by default
+ * Currency by design - STM, reference types, first-class executors/promises/futures, reducers (fork/join - this is really parallelism)
+ * A dialect - with support for the JVM (reference implementation), CLR/.NET, JavaScript, Lua, Python, Scheme/C
+    (a strong sense of host and platform, with full interop)
+ * generally promotes declarative first, functional second - focus on WHAT not on HOW
+ * grouped by namespaces - which you can jack into or extend when needed
+
