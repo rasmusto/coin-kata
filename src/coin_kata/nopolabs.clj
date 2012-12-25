@@ -16,17 +16,42 @@
          next-change (assoc change denom n-denom)]
     [next-amount next-change]))
 
-(defn make-change
+(defn chg
+  [make-change denoms amounts]
+  (let [amts (if (coll? amounts) amounts [amounts])
+        mk-chg (partial make-change denoms)]
+    (map mk-chg amts)))
+    
+(defn us-chg [make-change amounts] (chg make-change us-coins amounts))
+
+(defn x-chg [make-change amounts] (chg make-change x-coins amounts))
+
+(defn sgc
+  "simple greedy change"
   ([denoms amount]
     (let [change (init-change denoms)]
-      (make-change (sort > denoms) amount change)))
+      (sgc (sort > denoms) amount change)))
   ([[denom & next-denoms] amount change]
     (cond
-      (nil? denom) nil
       (= 0 amount) change
+      (nil? denom) nil
       :else
         (let [[next-amount next-change] (apply-denom denom amount change)]
-          (make-change next-denoms next-amount next-change)))))
+          (sgc next-denoms next-amount next-change)))))
+
+(defn sgcr
+  "simple greedy change recursive"
+  ([denoms amount]
+    (let [change (init-change denoms)]
+      (loop [[d & ds] (sort > denoms)
+             a amount 
+             c change]
+        (cond
+          (= 0 a) c
+          (nil? d) nil
+          :else
+            (let [[next-a next-c] (apply-denom d a c)]
+              (recur ds next-a next-c)))))))
 
 (defn mc2
   ([denoms amount]
@@ -87,10 +112,43 @@
 (defn mc5r
   ([denoms amount]
     (loop [d denoms a amount p (init-possible denoms)]
-      (prn (count p))
       (if (= a (:amt (first p)))
         (:change (first p))
         (recur d a (expand-possible d a p))))))
+
+(defn -possible? [[a n c] amt] (<= a amt))
+
+(defn -correct-change? [a amt] (= a amt))
+
+(defn -greatest-possible [[x] [y]] (> x y))
+
+(defn -expand-possible
+  [denoms amount possible]
+  (apply sorted-set-by -greatest-possible
+    (filter #(-possible? % amount)
+      (for [[a n c] possible d denoms]
+        (let [new-a (+ d a)
+              new-n (inc n)
+              new-c (assoc c d (inc (get c d)))]
+          [new-a new-n new-c])))))
+
+(defn -init-possible [denoms] (list [0 0 (init-change denoms)]))
+
+(defn -mc5
+  ([denoms amount]
+    (-mc5 denoms amount (-init-possible denoms)))
+  ([denoms amount [[a n c] :as possible]]
+    (if (= amount a)
+      c
+      (let [p (seq (-expand-possible denoms amount possible))]
+        (-mc5 denoms amount p)))))
+
+(defn -mc5r
+  ([denoms amount]
+    (loop [p (-init-possible denoms)]
+      (if (= amount (first (first p)))
+        (nth (first p) 2)
+        (recur (-expand-possible denoms amount p))))))
 
 (defn greedy-changer
   [denom]
@@ -115,7 +173,4 @@
                 next-change (assoc change d (:count c))]
             (recur next-a ds next-change)))))))
 
-(def x-chg (mc x-coins))
-
-(def us-chg (mc us-coins))
 
