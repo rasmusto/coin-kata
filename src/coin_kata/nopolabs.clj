@@ -1,4 +1,5 @@
-(ns coin-kata.nopolabs)
+(ns coin-kata.nopolabs
+  (:require [clojure.math.numeric-tower :as math]))
   
 ; in repl: (use :reload 'coin-kata.nopolabs)
 
@@ -172,5 +173,46 @@
                 next-a (:remaining c)
                 next-change (assoc change d (:count c))]
             (recur next-a ds next-change)))))))
+
+(defn add-coin [d c] (assoc c d (inc (get c d))))
+
+(defn more-change
+  [denoms possible]
+  (for [[a n c] possible d denoms]
+    (let [new-a (+ d a)
+          new-n (inc n)
+          new-c (assoc c d (inc (get c d)))]
+      [new-a new-n new-c])))
+
+(defn amount= [[a n c] amt] (= a amt))
+
+(defn amount< [[a n c] amt] (< a amt))
+
+(defn possible-change
+  ([denoms] (possible-change denoms (list [0 0 (init-change denoms)])))
+  ([denoms possible]
+    (concat
+      possible
+      (lazy-seq
+        (let [p (more-change denoms possible)]
+          (possible-change denoms p))))))
+
+; (first (drop-while #(amount< % 50) (possible-change x-coins)))
+
+
+(defn least-common-multiple [coll] (reduce math/lcm 1 coll))
+
+(defn lcm-greedy
+  [denoms amount]
+  (loop [amt amount
+         ds (sort > denoms)
+         chg (init-change denoms)]
+    (if (= 0 amt) chg
+      (let [lcm (least-common-multiple ds)
+            d (first ds)
+            q (quot amt lcm)
+            r (rem amt lcm)
+            n (* q (/ lcm d))]
+        (recur r (rest ds) (assoc chg d n))))))
 
 
