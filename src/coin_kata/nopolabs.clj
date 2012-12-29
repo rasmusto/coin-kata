@@ -204,15 +204,14 @@
 
 (defn lcm-greedy
   [denoms amount]
-  (loop [amt amount
-         ds (sort > denoms)
-         chg (init-change denoms)]
-    (if (= 0 amt) chg
-      (let [lcm (least-common-multiple ds)
-            d (first ds)
-            q (quot amt lcm)
-            r (rem amt lcm)
-            n (* q (/ lcm d))]
-        (recur r (rest ds) (assoc chg d n))))))
+  (loop [remaining-amount amount
+         remaining-denoms (sort > denoms)
+         change (init-change denoms)]
+    (if (= 0 remaining-amount) change
+      (let [lcm (least-common-multiple remaining-denoms)
+            d (first remaining-denoms)
+            n (* (/ lcm d) (quot remaining-amount lcm))
+            r (rem remaining-amount lcm)]
+        (recur r (rest remaining-denoms) (assoc change d n))))))
 
 
