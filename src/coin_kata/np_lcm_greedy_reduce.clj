@@ -8,14 +8,14 @@
 (defn expand-denoms [denoms] (reverse (map reverse (drop 1 (reductions conj [] (sort < denoms))))))
 
 (defn chgfn
-  [amount change denoms]
+  [[amount change] denoms]
   (let [lcm (reduce math/lcm 1 denoms)
         d (first denoms)
-        n (* (/ lcm d) (quot amt lcm))]
+        n (* (/ lcm d) (quot amount lcm))]
     [(rem amount lcm) (assoc change d n)]))
 
 (defn make-change
   "lcm greedy with reduce"
   [denoms amount]
-  (reduce chgfn [amount (init-change denoms)] (expand-denoms denoms)))
+  (second (reduce chgfn [amount (init-change denoms)] (expand-denoms denoms))))
 
