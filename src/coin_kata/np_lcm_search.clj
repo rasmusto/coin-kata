@@ -1,68 +1,115 @@
 (ns coin-kata.np-lcm-search
   (:require [clojure.math.numeric-tower :as math]))
 
-; in repl: (use :reload 'coin-kata.np-lcm-search)
+;; in repl: (use :reload 'coin-kata.np-lcm-search)
 
-; change is a map from denoms to quantities
+(def x-coins [1 10 20 25])
+(def us-coins [1 5 10 25])
+
+;; change is a map from denoms to quantities
 (defn init-change [denoms] (zipmap denoms (repeat 0)))
 
-; possible change is a vector of amount and change
-(defn init-possible [denoms] (list [0 (init-change denoms)]))
+(defn coin-count [change] (reduce + (vals change)))
 
-(defn greatest-possible [[x] [y]] (> x y))
+(defn add-change [x y] (into {} (map (fn [k] [k (+ (get x k) (get y k 0))]) (keys x))))
 
-(defn possible? [[a c] amt] (<= a amt))
+(defn add-coins [change denom n] (assoc change denom (+ (get change denom) n)))
+  
+(defn add-coin [change denom] (add-coins change denom 1))
+  
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Depth first search
 
-(defn new-possible [[a c] d] [(+ d a) (assoc c d (inc (get c d)))])
-
-(defn expand-possible
-  [denoms amount possible]
-  (apply sorted-set-by greatest-possible
-    (filter #(possible? % amount)
-      (for [p possible d denoms]
-        (new-possible p d)))))
-
-(defn search-change
-  "lcm search"
+(defn depth-first-change
   [denoms amount]
-  (loop [p (init-possible denoms)]
-    (let [first-p (first p)]
-      (if (= amount (first first-p))
-        (second first-p)
-        (recur (expand-possible denoms amount p))))))
+  (letfn
+    [(best-change [left right]
+       (if (some nil? [left right])
+         (or left right)
+           (if (< (coin-count left) (coin-count right))
+             left right)))
 
-(defn add-change
-  "adds two change maps, assumes x has all available denomination keys, and y has a subset"
-  [x y]
-  (into {} (map (fn [k] [k (+ (get x k) (get y k 0))]) (keys x))))
+     (look-deeper [denoms amount change]
+       (let [d (first denoms)
+             left (search denoms (- amount d) (add-coin change d))
+             right (search (next denoms) amount change)]
+         (best-change left right)))
+
+     (search [denoms amount change]
+       (cond
+         (zero? amount) change
+         (< amount 0) nil
+         (empty? denoms) nil
+         :else (look-deeper denoms amount change)))]
+
+    (search (sort > denoms) amount (init-change denoms))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Breadth first search
+
+(defn breadth-first-change
+  [denoms amount]
+  (letfn
+    [(init-possible [denoms] (list [0 (init-change denoms)]))
+
+     (greatest-possible [[x-amt] [y-amt]] (> x-amt y-amt))
+
+     (possible? [[amt chg] max-amount] (<= amt max-amount))
+
+     (new-possible [[amt chg] d] [(+ d amt) (add-coin chg d)])
+
+     (next-possible [possible denoms amount]
+       (apply sorted-set-by greatest-possible
+         (filter #(possible? % amount)
+           (for [p possible d denoms]
+             (new-possible p d)))))]
+
+    (loop [possible (init-possible denoms)]
+      (let [first-possible (first possible)]
+        (if (= amount (first first-possible))
+          (second first-possible)
+          (recur (next-possible possible denoms amount)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; LCM optimization
 
 (defn lcm-opt
-  "Lcm optimization, makes change using the largest available denomination
-   for portion of amount that is a multiple of the least common multiple
-   of all available denominations.
-   Accepts the available denominations and the amount of change needed.
-   Returns the denomination used, the number used, and the remaining amount."
-  [denoms amount]
-  (let [lcm (reduce math/lcm 1 denoms)
-        d (first denoms)
-        n (* (/ lcm d) (quot amount lcm))
-        r (rem amount lcm)]
-    [d n r]))
+  [chgfn]
+  (fn [denoms amount]
+    (let [ds (sort > denoms)
+          lcm (reduce math/lcm 1 ds)]
+      (if (< amount (* 2 lcm))
+        (chgfn ds amount)
+        (let [chg-amt (+ (rem amount lcm) lcm)
+              chg (chgfn ds chg-amt)
+              lcm-amt (- amount chg-amt)
+              d (first ds)
+              n (/ lcm-amt d)]
+          (add-coins chg d n))))))
 
-(defn make-change
-  "search using lcm optimization"
-  [denoms amount]
-  (loop [ds (sort > denoms)
-         amt amount
-         chg (init-change denoms)]
-    (if (= 0 amt)
-      ; done making change, return the result
-      chg
-      ; otherwise apply lcm optimization
-      (let [[d n r] (lcm-opt ds amt)]
-        (if (= 0 n)
-          ; no lcm change, apply search to remaining amount and return the result
-          (add-change chg (search-change ds amt))
-          ; otherwise recurse using remaining denominations and amount
-          (recur (rest ds) r (assoc chg d n)))))))
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 
+
+(def df-opt (lcm-opt depth-first-change))
+(def bf-opt (lcm-opt breadth-first-change))
+
+(def df-x (partial depth-first-change x-coins))
+(def bf-x (partial breadth-first-change x-coins))
+(def df-opt-x (partial df-opt x-coins))
+(def bf-opt-x (partial bf-opt x-coins))
+
+(defn test-x [n]
+  (filter (complement nil?)
+    (for [i (range 1 (inc n))]
+      (let [nd (coin-count (df-x i))
+            nb (coin-count (bf-x i))
+            ndo (coin-count (df-opt-x i))
+            nbo (coin-count (bf-opt-x i))]
+        (if (= nd nb ndo nbo)
+          nil
+          i)))))
 
