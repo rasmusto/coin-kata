@@ -9,6 +9,7 @@
                  [org.clojure/tools.trace "0.7.5"]
                  [org.clojure/tools.namespace "0.2.2"]
                  [org.clojure/core.memoize "0.5.2"]
+                 [org.clojure/math.numeric-tower "0.0.2"]
                  [typed "0.1.5"]]
   :plugins [[lein-cljsbuild "0.2.10"]])
 
