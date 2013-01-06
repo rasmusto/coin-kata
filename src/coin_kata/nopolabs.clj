@@ -1,7 +1,7 @@
-(ns coin-kata.np-lcm-search
+(ns coin-kata.nopolabs
   (:require [clojure.math.numeric-tower :as math]))
 
-;; in repl: (use :reload 'coin-kata.np-lcm-search)
+;; in repl: (use :reload 'coin-kata.nopolabs)
 
 (def x-coins [1 10 20 25])
 (def us-coins [1 5 10 25])
